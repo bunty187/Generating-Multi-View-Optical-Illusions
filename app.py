@@ -1,13 +1,11 @@
 import streamlit as st
 import torch
 from diffusers import DiffusionPipeline
-import os
-from visual_anagrams.views import get_views
-from visual_anagrams.samplers import sample_stage_1, sample_stage_2
-import mediapy as mp
-from visual_anagrams.animate import animate_two_view
 import torchvision.transforms.functional as TF
 from moviepy.editor import VideoFileClip
+from visual_anagrams.views import get_views
+from visual_anagrams.samplers import sample_stage_1, sample_stage_2
+from visual_anagrams.animate import animate_two_view
 
 # Convert tensor image to NumPy array
 def im_to_np(im):
@@ -16,7 +14,6 @@ def im_to_np(im):
     im = (im * 255).round().astype("uint8")
     return im
 
-# Streamlit app
 def main():
     st.sidebar.title("Hugging Face Authentication")
 
@@ -36,9 +33,10 @@ def main():
 
         # Device setup
         device = 'cuda'
-        
+
         # Load models
         try:
+            # Load DeepFloyd IF stage I
             stage_1 = DiffusionPipeline.from_pretrained(
                 "DeepFloyd/IF-I-M-v1.0",
                 variant="fp16",
@@ -47,7 +45,8 @@ def main():
             )
             stage_1.enable_model_cpu_offload()
             stage_1 = stage_1.to(device)
-            
+
+            # Load DeepFloyd IF stage II
             stage_2 = DiffusionPipeline.from_pretrained(
                 "DeepFloyd/IF-II-M-v1.0",
                 text_encoder=None,
@@ -57,7 +56,8 @@ def main():
             )
             stage_2.enable_model_cpu_offload()
             stage_2 = stage_2.to(device)
-            
+
+            # Load DeepFloyd IF stage III
             stage_3 = DiffusionPipeline.from_pretrained(
                 "stabilityai/stable-diffusion-x4-upscaler",
                 torch_dtype=torch.float16,
