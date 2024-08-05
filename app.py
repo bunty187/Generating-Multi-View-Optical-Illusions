@@ -17,6 +17,11 @@ def im_to_np(im):
 
 # Streamlit app
 def main():
+    st.sidebar.title("Hugging Face Authentication")
+
+    # Input Hugging Face token in the sidebar
+    hf_token = st.sidebar.text_input("Enter your Hugging Face token", type="password")
+
     st.title("Visual Anagrams Video Generator")
 
     # Input prompts
@@ -24,15 +29,30 @@ def main():
     prompt_2 = st.text_input("Enter the second prompt", "painting of a horse")
 
     if st.button("Generate Video"):
-        if not prompt_1 or not prompt_2:
-            st.error("Please provide both prompts.")
+        if not prompt_1 or not prompt_2 or not hf_token:
+            st.error("Please provide both prompts and the Hugging Face token.")
             return
 
         # Load models
         device = 'cuda'
-        stage_1 = DiffusionPipeline.from_pretrained("DeepFloyd/IF-I-M-v1.0", variant="fp16", torch_dtype=torch.float16).to(device)
-        stage_2 = DiffusionPipeline.from_pretrained("DeepFloyd/IF-II-M-v1.0", text_encoder=None, variant="fp16", torch_dtype=torch.float16).to(device)
-        stage_3 = DiffusionPipeline.from_pretrained("stabilityai/stable-diffusion-x4-upscaler", torch_dtype=torch.float16).to(device)
+        stage_1 = DiffusionPipeline.from_pretrained(
+            "DeepFloyd/IF-I-M-v1.0",
+            variant="fp16",
+            torch_dtype=torch.float16,
+            use_auth_token=hf_token  # Pass the token here
+        ).to(device)
+        stage_2 = DiffusionPipeline.from_pretrained(
+            "DeepFloyd/IF-II-M-v1.0",
+            text_encoder=None,
+            variant="fp16",
+            torch_dtype=torch.float16,
+            use_auth_token=hf_token  # Pass the token here
+        ).to(device)
+        stage_3 = DiffusionPipeline.from_pretrained(
+            "stabilityai/stable-diffusion-x4-upscaler",
+            torch_dtype=torch.float16,
+            use_auth_token=hf_token  # Pass the token here
+        ).to(device)
 
         # Views
         views = get_views(['identity', 'rotate_cw'])
