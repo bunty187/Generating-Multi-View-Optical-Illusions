@@ -23,10 +23,6 @@ def main():
     # Input Hugging Face token in the sidebar
     hf_token = st.sidebar.text_input("Enter your Hugging Face token", type="password")
 
-    # Optionally, store the token as an environment variable
-    if hf_token:
-        os.environ['HF_HOME'] = hf_token
-
     st.title("Visual Anagrams Video Generator")
 
     # Input prompts
@@ -38,26 +34,40 @@ def main():
             st.error("Please provide both prompts and the Hugging Face token.")
             return
 
-        # Load models
+        # Device setup
         device = 'cuda'
-        stage_1 = DiffusionPipeline.from_pretrained(
-            "DeepFloyd/IF-I-M-v1.0",
-            variant="fp16",
-            torch_dtype=torch.float16,
-            use_auth_token=hf_token  # Pass the token here
-        ).to(device)
-        stage_2 = DiffusionPipeline.from_pretrained(
-            "DeepFloyd/IF-II-M-v1.0",
-            text_encoder=None,
-            variant="fp16",
-            torch_dtype=torch.float16,
-            use_auth_token=hf_token  # Pass the token here
-        ).to(device)
-        stage_3 = DiffusionPipeline.from_pretrained(
-            "stabilityai/stable-diffusion-x4-upscaler",
-            torch_dtype=torch.float16,
-            use_auth_token=hf_token  # Pass the token here
-        ).to(device)
+        
+        # Load models
+        try:
+            stage_1 = DiffusionPipeline.from_pretrained(
+                "DeepFloyd/IF-I-M-v1.0",
+                variant="fp16",
+                torch_dtype=torch.float16,
+                use_auth_token=hf_token
+            )
+            stage_1.enable_model_cpu_offload()
+            stage_1 = stage_1.to(device)
+            
+            stage_2 = DiffusionPipeline.from_pretrained(
+                "DeepFloyd/IF-II-M-v1.0",
+                text_encoder=None,
+                variant="fp16",
+                torch_dtype=torch.float16,
+                use_auth_token=hf_token
+            )
+            stage_2.enable_model_cpu_offload()
+            stage_2 = stage_2.to(device)
+            
+            stage_3 = DiffusionPipeline.from_pretrained(
+                "stabilityai/stable-diffusion-x4-upscaler",
+                torch_dtype=torch.float16,
+                use_auth_token=hf_token
+            )
+            stage_3.enable_model_cpu_offload()
+            stage_3 = stage_3.to(device)
+        except Exception as e:
+            st.error(f"An error occurred while loading the models: {e}")
+            return
 
         # Views
         views = get_views(['identity', 'rotate_cw'])
