@@ -3,12 +3,17 @@ import torch
 from diffusers import DiffusionPipeline
 from visual_anagrams.views import get_views
 from visual_anagrams.samplers import sample_stage_1, sample_stage_2
-from visual_anagrams.utils import im_to_np
 import mediapy as mp
 from visual_anagrams.animate import animate_two_view
 import torchvision.transforms.functional as TF
 from moviepy.editor import VideoFileClip
-import os
+
+# Convert tensor image to NumPy array
+def im_to_np(im):
+    im = (im / 2 + 0.5).clamp(0, 1)
+    im = im.detach().cpu().permute(1, 2, 0).numpy()
+    im = (im * 255).round().astype("uint8")
+    return im
 
 # Streamlit app
 def main():
