@@ -14,11 +14,33 @@ def im_to_np(im):
     im = (im * 255).round().astype("uint8")
     return im
 
+# Function to check Hugging Face token validity
+def check_token(token):
+    try:
+        # Try to load a model to verify the token
+        DiffusionPipeline.from_pretrained(
+            "DeepFloyd/IF-I-M-v1.0",
+            variant="fp16",
+            torch_dtype=torch.float16,
+            use_auth_token=token
+        )
+        return True
+    except Exception as e:
+        st.error(f"Token validation failed: {e}")
+        return False
+
 def main():
     st.sidebar.title("Hugging Face Authentication")
 
     # Input Hugging Face token in the sidebar
     hf_token = st.sidebar.text_input("Enter your Hugging Face token", type="password")
+
+    # Validate token if provided
+    if hf_token and st.button("Validate Token"):
+        if check_token(hf_token):
+            st.success("Token is valid and access is granted.")
+        else:
+            st.error("Invalid token or access denied.")
 
     st.title("Visual Anagrams Video Generator")
 
