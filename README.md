@@ -14,8 +14,8 @@ Before using DeepFloyd IF, you must accept its usage conditions. To do so:
 ## Getting Started:
 1. Clone the repository:
       ```
-      git clone https://github.com/your-username/IndiaLaw-Q-A-Intelligent-Legal-Guidance.git
-      cd dir
+      git clone https://github.com/your-username/Generating-Multi-View-Optical-Illusions.git
+      cd Generating-Multi-View-Optical-Illusions
       ```
 2. Install the libraries:
    ```
@@ -33,3 +33,9 @@ Before using DeepFloyd IF, you must accept its usage conditions. To do so:
 5. Use the Chatbot:
    * Open your web browser and go to http://localhost:8501 (default Streamlit port).
    * You will see the chat interface titled "Generating Multi-View Optical Illusions Video"
+
+https://github.com/user-attachments/assets/248710f1-cbb0-437d-b67f-b81d36195a52
+
+
+  
+
