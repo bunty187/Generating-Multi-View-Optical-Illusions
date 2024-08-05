@@ -1,6 +1,7 @@
 import streamlit as st
 import torch
 from diffusers import DiffusionPipeline
+import os
 from visual_anagrams.views import get_views
 from visual_anagrams.samplers import sample_stage_1, sample_stage_2
 import mediapy as mp
@@ -21,6 +22,10 @@ def main():
 
     # Input Hugging Face token in the sidebar
     hf_token = st.sidebar.text_input("Enter your Hugging Face token", type="password")
+
+    # Optionally, store the token as an environment variable
+    if hf_token:
+        os.environ['HF_HOME'] = hf_token
 
     st.title("Visual Anagrams Video Generator")
 
